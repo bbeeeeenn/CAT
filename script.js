@@ -1,22 +1,32 @@
 const container = document.querySelector(".container");
 const fact = document.getElementById("catFact");
 const randomizer = document.querySelector(".randomizer");
-getRandomCatFact();
-randomizer.addEventListener("click", () => {
-	getRandomCatFact();
-});
-document.addEventListener("keydown", (e) => {
+
+addEL();
+
+function getRandomCatFact() {
+	container.classList.add("shrunk");
+	removeEL();
+	fetch(`https://catfact.ninja/fact?max_length=140`)
+		.then((res) => res.json())
+		.then((data) => {
+			console.log(data.fact);
+			container.classList.remove("shrunk");
+			fact.innerText = data.fact;
+			addEL();
+		});
+}
+
+function addEL() {
+	randomizer.addEventListener("click", getRandomCatFact);
+	document.addEventListener("keyup", keyEnterEvent);
+}
+function keyEnterEvent(e) {
 	if (e.key === "Enter") {
 		getRandomCatFact();
 	}
-});
-
-async function getRandomCatFact() {
-	container.classList.add("shrunk");
-	fact.innerText = "Nyaw...";
-	const response = await fetch(`https://catfact.ninja/fact?max_length=140`);
-	const data = await response.json();
-	// console.log(data);
-	container.classList.remove("shrunk");
-	fact.innerText = data.fact;
+}
+function removeEL() {
+	randomizer.removeEventListener("click", getRandomCatFact);
+	document.removeEventListener("keyup", keyEnterEvent);
 }
